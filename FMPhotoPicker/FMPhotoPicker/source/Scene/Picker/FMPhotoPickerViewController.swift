@@ -84,6 +84,8 @@ public class FMPhotoPickerViewController: UIViewController {
         self.imageCollectionView.register(FMPhotoPickerImageCollectionViewCell.self, forCellWithReuseIdentifier: FMPhotoPickerImageCollectionViewCell.reuseId)
         self.imageCollectionView.dataSource = self
         self.imageCollectionView.delegate = self
+        self.view.backgroundColor = config.viewBackgroundColor
+        self.imageCollectionView.backgroundColor = config.viewBackgroundColor
         
         self.numberOfSelectedPhotoContainer.isHidden = true
         self.doneButton.isHidden = true
@@ -359,7 +361,7 @@ extension FMPhotoPickerViewController: UIViewControllerTransitioningDelegate {
 private extension FMPhotoPickerViewController {
     func initializeViews() {
         let headerView = UIView()
-        headerView.backgroundColor = .white
+        headerView.backgroundColor = config.viewBackgroundColor
         
         headerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(headerView)
@@ -398,7 +400,7 @@ private extension FMPhotoPickerViewController {
             menuContainer.leftAnchor.constraint(equalTo: headerView.leftAnchor),
             menuContainer.rightAnchor.constraint(equalTo: headerView.rightAnchor),
             menuContainer.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
-            menuContainer.heightAnchor.constraint(equalToConstant: 44)
+            menuContainer.heightAnchor.constraint(equalToConstant: config.navigationBarHeight)
         ])
         
         let cancelButton = UIButton(type: .system)

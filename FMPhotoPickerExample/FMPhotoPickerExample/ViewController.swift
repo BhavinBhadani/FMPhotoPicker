@@ -83,6 +83,9 @@ class ViewController: UIViewController, FMPhotoPickerViewControllerDelegate, FMI
         
         var config = FMPhotoPickerConfig()
         
+        config.viewBackgroundColor = .black
+        config.navigationBarHeight = 54
+        
         config.selectMode = selectMode
         config.mediaTypes = mediaTypes
         config.maxImage = self.maxImage

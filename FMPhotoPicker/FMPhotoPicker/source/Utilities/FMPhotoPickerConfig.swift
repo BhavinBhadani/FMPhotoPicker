@@ -63,6 +63,8 @@ public struct FMPhotoPickerConfig {
     public var titleFont: UIFont = .systemFont(ofSize: 17)
     public var navigationBarHeight: CGFloat = 44
     public var viewBackgroundColor: UIColor = .white
+    public var selectedBorderColor: UIColor = kRedColor
+    public var selectOnFullScreenEnable: Bool = true
 
     public var strings: [String: String] = [
         "picker_button_cancel":                     "Cancel",

@@ -187,6 +187,7 @@ class FMPhotoPickerImageCollectionViewCell: UICollectionViewCell {
         
         self.performSelectionAnimation(selectedIndex: selectedIndex)
     }
+    
     @IBAction func onTapSelects(_ sender: Any) {
         self.onTapSelect()
     }
