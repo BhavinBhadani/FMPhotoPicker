@@ -61,6 +61,7 @@ public struct FMPhotoPickerConfig {
     
     public var titleFontSize: CGFloat = 17
     public var titleFont: UIFont = .systemFont(ofSize: 17)
+    public var doneButtonFont: UIFont = .systemFont(ofSize: 14)
     public var navigationBarHeight: CGFloat = 44
     public var viewBackgroundColor: UIColor = .white
     public var selectedBorderColor: UIColor = kRedColor
@@ -70,6 +71,7 @@ public struct FMPhotoPickerConfig {
     public var strings: [String: String] = [
         "picker_button_cancel":                     "Cancel",
         "picker_button_select_done":                "Done",
+        "picker_title_label":                       "Select Photos",
         "picker_warning_over_image_select_format":  "You can select maximum %d images",
         "picker_warning_over_video_select_format":  "You can select maximum %d videos",
         

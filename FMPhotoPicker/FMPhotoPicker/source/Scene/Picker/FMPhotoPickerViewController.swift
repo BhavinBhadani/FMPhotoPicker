@@ -25,6 +25,14 @@ public class FMPhotoPickerViewController: UIViewController {
     private weak var imageCollectionView: UICollectionView!
     private weak var numberOfSelectedPhotoContainer: UIView!
     private weak var numberOfSelectedPhoto: UILabel!
+    private var titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 17)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
+    }()
     private weak var doneButton: UIButton!
     private weak var cancelButton: UIButton!
     
@@ -93,10 +101,12 @@ public class FMPhotoPickerViewController: UIViewController {
         self.doneButton.isHidden = true
         
         // set button title
-        self.cancelButton.setTitle(config.strings["picker_button_cancel"], for: .normal)
-        self.cancelButton.titleLabel!.font = UIFont.boldSystemFont(ofSize: config.titleFontSize)
+        self.cancelButton.setImage(UIImage(named: "icon_back", in: .current, compatibleWith: nil), for: .normal)
         self.doneButton.setTitle(config.strings["picker_button_select_done"], for: .normal)
         self.doneButton.titleLabel!.font = UIFont.boldSystemFont(ofSize: config.titleFontSize)
+        self.doneButton.setUnderline()
+        self.titleLabel.text = config.strings["picker_title_label"]
+        self.titleLabel.font = config.titleFont
     }
     
     @objc private func onTapCancel(_ sender: Any) {
@@ -418,21 +428,22 @@ private extension FMPhotoPickerViewController {
             menuContainer.heightAnchor.constraint(equalToConstant: config.navigationBarHeight)
         ])
         
-        let cancelButton = UIButton(type: .system)
+        let cancelButton = UIButton(type: .custom)
         self.cancelButton = cancelButton
-        cancelButton.setTitleColor(kBlackColor, for: .normal)
+        self.cancelButton.setImage(UIImage(named: "icon_back", in: .current, compatibleWith: nil), for: .normal)
         cancelButton.addTarget(self, action: #selector(onTapCancel(_:)), for: .touchUpInside)
-        
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         menuContainer.addSubview(cancelButton)
         NSLayoutConstraint.activate([
             cancelButton.leftAnchor.constraint(equalTo: menuContainer.leftAnchor, constant: 16),
             cancelButton.centerYAnchor.constraint(equalTo: menuContainer.centerYAnchor),
+            cancelButton.widthAnchor.constraint(equalToConstant: 42),
+            cancelButton.heightAnchor.constraint(equalToConstant: 42),
         ])
         
         let doneButton = UIButton(type: .system)
         self.doneButton = doneButton
-        doneButton.setTitleColor(kBlackColor, for: .normal)
+        doneButton.setTitleColor(kCyanColor, for: .normal)
         doneButton.addTarget(self, action: #selector(onTapDone(_:)), for: .touchUpInside)
         
         doneButton.translatesAutoresizingMaskIntoConstraints = false
@@ -443,11 +454,18 @@ private extension FMPhotoPickerViewController {
             doneButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 40),
         ])
         
+        self.titleLabel.font = config.titleFont
+        menuContainer.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.centerYAnchor.constraint(equalTo: menuContainer.centerYAnchor),
+            titleLabel.centerXAnchor.constraint(equalTo: menuContainer.centerXAnchor),
+        ])
+        
         let numberOfSelectedPhotoContainer = UIView()
         self.numberOfSelectedPhotoContainer = numberOfSelectedPhotoContainer
         numberOfSelectedPhotoContainer.layer.cornerRadius = 14
         numberOfSelectedPhotoContainer.layer.masksToBounds = true
-        numberOfSelectedPhotoContainer.backgroundColor = kRedColor
+        numberOfSelectedPhotoContainer.backgroundColor = .white
         
         numberOfSelectedPhotoContainer.translatesAutoresizingMaskIntoConstraints = false
         menuContainer.addSubview(numberOfSelectedPhotoContainer)
@@ -461,7 +479,7 @@ private extension FMPhotoPickerViewController {
         let numberOfSelectedPhoto = UILabel()
         self.numberOfSelectedPhoto = numberOfSelectedPhoto
         numberOfSelectedPhoto.font = .systemFont(ofSize: 15)
-        numberOfSelectedPhoto.textColor = .white
+        numberOfSelectedPhoto.textColor = .black
         numberOfSelectedPhoto.textAlignment = .center
         
         numberOfSelectedPhoto.translatesAutoresizingMaskIntoConstraints = false

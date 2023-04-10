@@ -146,11 +146,9 @@ class FMPhotoPresenterViewController: UIViewController {
         }
         
         // set button title
-        self.backButton.setTitle(config.strings["present_button_back"], for: .normal)
-        self.backButton.titleLabel!.font = UIFont.boldSystemFont(ofSize: config.titleFontSize)
-        
         self.doneButton.setTitle(config.strings["picker_button_select_done"], for: .normal)
-        self.doneButton.titleLabel!.font = UIFont.boldSystemFont(ofSize: config.titleFontSize)
+        self.doneButton.titleLabel!.font = config.doneButtonFont
+        self.doneButton.setUnderline()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -318,7 +316,7 @@ private extension FMPhotoPresenterViewController {
 //        private weak var unsafeAreaBottomView: UIView!
         
         let headerView = UIView()
-        headerView.backgroundColor = .white
+        headerView.backgroundColor = config.viewBackgroundColor
         
         headerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(headerView)
@@ -341,7 +339,7 @@ private extension FMPhotoPresenterViewController {
         ])
         
         let menuContainer = UIView()
-        
+        menuContainer.backgroundColor = config.viewBackgroundColor
         menuContainer.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(menuContainer)
         if #available(iOS 11.0, *) {
@@ -357,22 +355,21 @@ private extension FMPhotoPresenterViewController {
             menuContainer.leftAnchor.constraint(equalTo: headerView.leftAnchor),
             menuContainer.rightAnchor.constraint(equalTo: headerView.rightAnchor),
             menuContainer.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
-            menuContainer.heightAnchor.constraint(equalToConstant: 44)
+            menuContainer.heightAnchor.constraint(equalToConstant: config.navigationBarHeight)
         ])
         
         let backButton = UIButton(type: .custom)
         self.backButton = backButton
-        backButton.setTitleColor(kBlackColor, for: .normal)
         backButton.setImage(UIImage(named: "icon_back", in: .current, compatibleWith: nil), for: .normal)
-        backButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
-        backButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: -4)
         backButton.addTarget(self, action: #selector(onTapClose(_:)), for: .touchUpInside)
         
         backButton.translatesAutoresizingMaskIntoConstraints = false
         menuContainer.addSubview(backButton)
         NSLayoutConstraint.activate([
-            backButton.leftAnchor.constraint(equalTo: menuContainer.leftAnchor, constant: 8),
+            backButton.leftAnchor.constraint(equalTo: menuContainer.leftAnchor, constant: 16),
             backButton.centerYAnchor.constraint(equalTo: menuContainer.centerYAnchor),
+            backButton.widthAnchor.constraint(equalToConstant: 42),
+            backButton.heightAnchor.constraint(equalToConstant: 42),
         ])
         
         let photoTitle = UILabel()
@@ -483,7 +480,7 @@ private extension FMPhotoPresenterViewController {
         
         let bottomViewContainer = UIView()
         self.bottomViewContainer = bottomViewContainer
-        bottomViewContainer.backgroundColor = .white
+        bottomViewContainer.backgroundColor = config.viewBackgroundColor
         
         bottomViewContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomViewContainer)
