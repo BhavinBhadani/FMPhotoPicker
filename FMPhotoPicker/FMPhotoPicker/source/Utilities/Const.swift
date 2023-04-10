@@ -20,6 +20,9 @@ internal let kBackgroundColor = UIColor(red: 242/255, green: 242/255, blue: 242/
 internal let kTransparentBackgroundColor = UIColor(white: 1, alpha: 0.9)
 internal let kBorderColor = UIColor(red: 221/255, green: 221/255, blue: 221/255, alpha: 1)
 
+internal var kSelectionColor = UIColor(red: 1, green: 81/255, blue: 81/255, alpha: 1)
+internal var kSelectionTextColor = UIColor.white
+
 internal let kDefaultFilter = FMFilter.None
 internal let kDefaultCrop = FMCrop.ratioCustom
 

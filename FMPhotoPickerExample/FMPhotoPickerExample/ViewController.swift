@@ -85,6 +85,7 @@ class ViewController: UIViewController, FMPhotoPickerViewControllerDelegate, FMI
         
         config.viewBackgroundColor = .black
         config.navigationBarHeight = 54
+        config.selectOnFullScreenEnable = false
         
         config.selectMode = selectMode
         config.mediaTypes = mediaTypes

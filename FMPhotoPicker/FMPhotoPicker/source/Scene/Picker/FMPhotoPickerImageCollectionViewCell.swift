@@ -94,7 +94,7 @@ class FMPhotoPickerImageCollectionViewCell: UICollectionViewCell {
         
         let cellFilterContainer = UIView()
         self.cellFilterContainer = cellFilterContainer
-        cellFilterContainer.layer.borderColor = kRedColor.cgColor
+        cellFilterContainer.layer.borderColor = kSelectionColor.cgColor
         cellFilterContainer.layer.borderWidth = 2
         cellFilterContainer.isHidden = true
         
@@ -124,7 +124,7 @@ class FMPhotoPickerImageCollectionViewCell: UICollectionViewCell {
         let selectedIndex = UILabel()
         self.selectedIndex = selectedIndex
         selectedIndex.font = .systemFont(ofSize: 15)
-        selectedIndex.textColor = .white
+        selectedIndex.textColor = kSelectionTextColor
         
         contentView.addSubview(selectedIndex)
         selectedIndex.translatesAutoresizingMaskIntoConstraints = false
