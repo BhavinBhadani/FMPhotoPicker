@@ -69,11 +69,6 @@ public class FMPhotoPickerViewController: UIViewController {
         kSelectionTextColor = config.selectedTextColor
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
-        if self.config.isDarkMode {
-            if #available(iOS 13.0, *) {
-                self.overrideUserInterfaceStyle = .dark
-            }
-        }
     }
     
     required public init?(coder aDecoder: NSCoder) {

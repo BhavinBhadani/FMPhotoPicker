@@ -66,13 +66,6 @@ class FMPhotoPresenterViewController: UIViewController {
         self.dataSource = dataSource
         self.currentPhotoIndex = initialPhotoIndex
         super.init(nibName: nil, bundle: .current)
-        
-        if self.config.isDarkMode {
-            if #available(iOS 13.0, *) {
-                self.overrideUserInterfaceStyle = .dark
-            }
-        }
-
         self.setupPageViewController(withInitialPhoto: self.dataSource.photo(atIndex: self.currentPhotoIndex))
     }
     
