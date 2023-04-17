@@ -68,6 +68,7 @@ public struct FMPhotoPickerConfig {
     public var selectedTextColor: UIColor = .white
     public var titleTextColor: UIColor = .black
     public var selectOnFullScreenEnable: Bool = true
+    public var isDarkMode: Bool = false
 
     public var strings: [String: String] = [
         "picker_button_cancel":                     "Cancel",
