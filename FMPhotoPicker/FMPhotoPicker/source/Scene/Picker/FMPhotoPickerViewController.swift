@@ -480,7 +480,7 @@ private extension FMPhotoPickerViewController {
         let numberOfSelectedPhoto = UILabel()
         self.numberOfSelectedPhoto = numberOfSelectedPhoto
         numberOfSelectedPhoto.font = .systemFont(ofSize: 15)
-        numberOfSelectedPhoto.textColor = .black
+        numberOfSelectedPhoto.textColor = config.selectedTextColor
         numberOfSelectedPhoto.textAlignment = .center
         
         numberOfSelectedPhoto.translatesAutoresizingMaskIntoConstraints = false
