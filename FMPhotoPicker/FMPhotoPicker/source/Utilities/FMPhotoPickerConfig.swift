@@ -66,6 +66,7 @@ public struct FMPhotoPickerConfig {
     public var viewBackgroundColor: UIColor = .white
     public var selectedBorderColor: UIColor = kRedColor
     public var selectedTextColor: UIColor = .white
+    public var titleTextColor: UIColor = .black
     public var selectOnFullScreenEnable: Bool = true
 
     public var strings: [String: String] = [

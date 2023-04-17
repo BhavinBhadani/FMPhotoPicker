@@ -107,6 +107,7 @@ public class FMPhotoPickerViewController: UIViewController {
         self.doneButton.setUnderline()
         self.titleLabel.text = config.strings["picker_title_label"]
         self.titleLabel.font = config.titleFont
+        self.titleLabel.textColor = config.titleTextColor
     }
     
     @objc private func onTapCancel(_ sender: Any) {
@@ -465,7 +466,7 @@ private extension FMPhotoPickerViewController {
         self.numberOfSelectedPhotoContainer = numberOfSelectedPhotoContainer
         numberOfSelectedPhotoContainer.layer.cornerRadius = 14
         numberOfSelectedPhotoContainer.layer.masksToBounds = true
-        numberOfSelectedPhotoContainer.backgroundColor = .white
+        numberOfSelectedPhotoContainer.backgroundColor = config.selectedBorderColor
         
         numberOfSelectedPhotoContainer.translatesAutoresizingMaskIntoConstraints = false
         menuContainer.addSubview(numberOfSelectedPhotoContainer)
