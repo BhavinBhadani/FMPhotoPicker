@@ -163,7 +163,7 @@ class Helper: NSObject {
     }
     
     static func openIphoneSetting() {
-        UIApplication.shared.openURL(URL(string: UIApplication.openSettingsURLString)!)
+        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
     
     static func requestAuthorizationForPhotoAccess(authorized: @escaping () -> Void, rejected: @escaping () -> Void) {

@@ -25,7 +25,7 @@ class FMWarningView {
     static let shared = FMWarningView()
     
     private init() {
-        let rootVC = (UIApplication.shared.delegate?.window??.rootViewController)!
+        let rootVC = (UIApplication.shared.keyWindow?.rootViewController)!
         
         self.containerView = UIView(frame: rootVC.view.frame)
         self.containerView.backgroundColor = .clear
@@ -62,10 +62,9 @@ class FMWarningView {
     
     func showAndAutoHide() {
         if self.animating { return }
-        
+        guard let keyWindow = UIApplication.shared.keyWindow else { return }
         self.animating = true
-        
-        UIApplication.shared.keyWindow?.addSubview(self.containerView)
+        keyWindow.addSubview(self.containerView)
         self.containerView.isHidden = false
         self.containerView.alpha = 0
         
@@ -73,17 +72,16 @@ class FMWarningView {
                                 delay: 0,
                                 options: .calculationModeCubic,
                                 animations: {
-                                    UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.05, animations: {
-                                        self.containerView.alpha = 1
-                                    })
-                                    UIView.addKeyframe(withRelativeStartTime: 0.8, relativeDuration: 0.2, animations: {
-                                        self.containerView.alpha = 0
-                                    })
-        },
-                                completion: { completed in
-                                    self.containerView.isHidden = true
-                                    self.containerView.removeFromSuperview()
-                                    self.animating = false
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.05, animations: {
+                self.containerView.alpha = 1
+            })
+            UIView.addKeyframe(withRelativeStartTime: 0.8, relativeDuration: 0.2, animations: {
+                self.containerView.alpha = 0
+            })
+        }, completion: { completed in
+            self.containerView.isHidden = true
+            self.containerView.removeFromSuperview()
+            self.animating = false
         })
     }
     
