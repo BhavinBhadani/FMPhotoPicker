@@ -145,7 +145,7 @@ class Helper: NSObject {
         // fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         
         fetchOptions.predicate = NSPredicate(format: "mediaType IN %@", allowMediaTypes.map( { $0.value() }))
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         let fetchResult = PHAsset.fetchAssets(with: fetchOptions)
         
         guard fetchResult.count > 0 else { return [] }
