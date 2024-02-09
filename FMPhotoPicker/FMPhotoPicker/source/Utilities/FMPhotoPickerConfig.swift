@@ -73,8 +73,8 @@ public struct FMPhotoPickerConfig {
         "picker_button_cancel":                     "Cancel",
         "picker_button_select_done":                "Done",
         "picker_title_label":                       "Select Photos",
-        "picker_warning_over_image_select_format":  "You can select maximum %d images",
-        "picker_warning_over_video_select_format":  "You can select maximum %d videos",
+        "picker_warning_over_image_select_format":  "You can select maximum %d image",
+        "picker_warning_over_video_select_format":  "You can select maximum %d video",
         
         "present_title_photo_created_date_format":  "yyyy/M/d",
         "present_button_back":                      "Back",
