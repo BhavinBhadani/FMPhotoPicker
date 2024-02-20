@@ -191,7 +191,7 @@ class Helper: NSObject {
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
 
-    static func requestAuthorizationForPhotoAccess(authorized: @escaping () -> Void, rejected: @escaping () -> Void) {
+    static func requestAuthorizationForPhotoAccess(authorized: @escaping () -> Void, limited: @escaping () -> Void, rejected: @escaping () -> Void) {
         if #available(iOS 14, *) {
             let requiredAccessLevel: PHAccessLevel = .readWrite
             PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { status in
@@ -199,7 +199,7 @@ class Helper: NSObject {
                     if status == .authorized {
                         authorized()
                     } else if status == .limited {
-                        authorized()
+                        limited()
                     } else {
                         rejected()
                     }

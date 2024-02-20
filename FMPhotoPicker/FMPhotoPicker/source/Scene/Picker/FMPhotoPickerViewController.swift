@@ -144,7 +144,7 @@ public class FMPhotoPickerViewController: UIViewController {
             let okAction = UIAlertAction(
                 title: config.strings["permission_button_ok"],
                 style: .default) { (_) in
-                    Helper.requestAuthorizationForPhotoAccess(authorized: self.fetchPhotos, rejected: Helper.openIphoneSetting)
+                    Helper.requestAuthorizationForPhotoAccess(authorized: self.fetchPhotos, limited: self.fetchPhotosOnLimitedAccess, rejected: Helper.openIphoneSetting)
             }
 
             let cancelAction = UIAlertAction(
@@ -221,6 +221,11 @@ public class FMPhotoPickerViewController: UIViewController {
                 self.delegate?.fmPhotoPickerController(self, didFinishPickingPhotoWith: result)
             }
         }
+    }
+    
+    private func fetchPhotosOnLimitedAccess() {
+        isAccessLimited = true
+        fetchPhotos()
     }
 }
 
