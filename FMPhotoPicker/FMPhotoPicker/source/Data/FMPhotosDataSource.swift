@@ -50,10 +50,11 @@ class FMPhotosDataSource {
         return Array(self.selectedPhotoIndexes[changedIndex...])
     }
 
-    public func getSelectedPhotos() -> [FMPhotoAsset] {
+    public func getSelectedPhotos(for isAccessLimited: Bool = false) -> [FMPhotoAsset] {
         var result = [FMPhotoAsset]()
-        self.selectedPhotoIndexes.forEach {
-            if let photo = self.photo(atIndex: $0) {
+        self.selectedPhotoIndexes.forEach { index in
+            let selectedIndex = isAccessLimited ? (index - 1) : index
+            if let photo = self.photo(atIndex: selectedIndex) {
                 result.append(photo)
             }
         }

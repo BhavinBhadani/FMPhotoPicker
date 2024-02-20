@@ -101,6 +101,7 @@ public class FMPhotoPickerViewController: UIViewController {
     // MARK: - Setup View
     private func setupView() {
         self.imageCollectionView.register(FMPhotoPickerImageCollectionViewCell.self, forCellWithReuseIdentifier: FMPhotoPickerImageCollectionViewCell.reuseId)
+        self.imageCollectionView.register(FMPhotoPickerMoreCollectionViewCell.self, forCellWithReuseIdentifier: FMPhotoPickerMoreCollectionViewCell.reuseId)
         self.imageCollectionView.register(FMPhotoPickerHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FMPhotoPickerHeaderView.reuseId)
 
         self.imageCollectionView.dataSource = self
@@ -193,7 +194,7 @@ public class FMPhotoPickerViewController: UIViewController {
     
     private func processDetermination() {
         if config.shouldReturnAsset {
-            let assets = dataSource.getSelectedPhotos().compactMap { $0.asset }
+            let assets = dataSource.getSelectedPhotos(for: isAccessLimited).compactMap { $0.asset }
             delegate?.fmPhotoPickerController(self, didFinishPickingPhotoWith: assets)
             return
         }
@@ -204,7 +205,7 @@ public class FMPhotoPickerViewController: UIViewController {
         
         DispatchQueue.global(qos: .userInitiated).async {
             let multiTask = DispatchGroup()
-            for (index, element) in self.dataSource.getSelectedPhotos().enumerated() {
+            for (index, element) in self.dataSource.getSelectedPhotos(for: self.isAccessLimited).enumerated() {
                 multiTask.enter()
                 element.requestFullSizePhoto(cropState: .edited, filterState: .edited) {
                     guard let image = $0 else { return }
@@ -229,6 +230,7 @@ extension FMPhotoPickerViewController: PHPhotoLibraryChangeObserver {
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
         DispatchQueue.main.async { [unowned self] in
             self.fetchPhotos()
+            self.updateControlBar()
         }
     }
 }
@@ -237,14 +239,22 @@ extension FMPhotoPickerViewController: PHPhotoLibraryChangeObserver {
 extension FMPhotoPickerViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let total = self.dataSource?.numberOfPhotos {
-            return total
+            return isAccessLimited ? (total + 1) : total
         }
-        return 0
+        return isAccessLimited ? 1 : 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if isAccessLimited && indexPath.item == 0 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FMPhotoPickerMoreCollectionViewCell.reuseId, for: indexPath) as? FMPhotoPickerMoreCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            return cell
+        }
+
+        let indexPathItem = isAccessLimited ? (indexPath.item - 1) : indexPath.item
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FMPhotoPickerImageCollectionViewCell.reuseId, for: indexPath) as? FMPhotoPickerImageCollectionViewCell,
-            let photoAsset = self.dataSource.photo(atIndex: indexPath.item) else {
+            let photoAsset = self.dataSource.photo(atIndex: indexPathItem) else {
             return UICollectionViewCell()
         }
         
@@ -283,8 +293,9 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
      the photo will be added to selected list. Otherwise, a warning dialog will be displayed and NOTHING will be added.
      */
     public func tryToAddPhotoToSelectedList(photoIndex index: Int) {
+        let indexPathItem = isAccessLimited ? (index - 1) : index
         if self.config.selectMode == .multiple {
-            guard let fmMediaType = self.dataSource.mediaTypeForPhoto(atIndex: index) else { return }
+            guard let fmMediaType = self.dataSource.mediaTypeForPhoto(atIndex: indexPathItem) else { return }
 
             var canBeAdded = true
             
@@ -314,10 +325,11 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
             }
         } else {  // single selection mode
             var indexPaths = [IndexPath]()
-            self.dataSource.getSelectedPhotos().forEach { photo in
+            self.dataSource.getSelectedPhotos(for: isAccessLimited).forEach { photo in
                 guard let photoIndex = self.dataSource.index(ofPhoto: photo) else { return }
-                indexPaths.append(IndexPath(row: photoIndex, section: 0))
-                self.dataSource.unsetSeclectedForPhoto(atIndex: photoIndex)
+                let photoIndexItem = isAccessLimited ? (photoIndex + 1) : photoIndex
+                indexPaths.append(IndexPath(row: photoIndexItem, section: 0))
+                self.dataSource.unsetSeclectedForPhoto(atIndex: photoIndexItem)
             }
             
             self.dataSource.setSeletedForPhoto(atIndex: index)
@@ -331,8 +343,14 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension FMPhotoPickerViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if isAccessLimited && indexPath.item == 0 {
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
+            return
+        }
+        
         if config.selectOnFullScreenEnable {
-            let vc = FMPhotoPresenterViewController(config: self.config, dataSource: self.dataSource, initialPhotoIndex: indexPath.item)
+            let photoIndexItem = isAccessLimited ? (indexPath.item - 1) : indexPath.item
+            let vc = FMPhotoPresenterViewController(config: self.config, dataSource: self.dataSource, initialPhotoIndex: photoIndexItem)
             
             self.presentedPhotoIndex = indexPath.item
             
@@ -348,6 +366,7 @@ extension FMPhotoPickerViewController: UICollectionViewDelegate, UICollectionVie
                 }
             }
             vc.didMoveToViewControllerHandler = { vc, photoIndex in
+                let photoIndex = self.isAccessLimited ? (photoIndex + 1) : photoIndex
                 self.presentedPhotoIndex = photoIndex
             }
             vc.didTapDone = {
@@ -380,7 +399,7 @@ extension FMPhotoPickerViewController: UICollectionViewDelegate, UICollectionVie
             }
             view.configure(with: config)
             view.onTapManage = {
-                PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
+                Helper.openIphoneSetting()
             }
             return view
         }
