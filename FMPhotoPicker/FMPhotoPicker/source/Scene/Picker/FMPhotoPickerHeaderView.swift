@@ -15,7 +15,8 @@ class FMPhotoPickerHeaderView: UICollectionReusableView {
     weak var containerView: UIView!
     weak var contentLabel: UILabel!
     weak var manageButton: UIButton!
-    
+    weak var seperatorView: UIView!
+
     private var config: FMPhotoPickerConfig?
     public var onTapManage = {}
     
@@ -84,6 +85,18 @@ class FMPhotoPickerHeaderView: UICollectionReusableView {
             manageButton.leftAnchor.constraint(equalTo: contentLabel.rightAnchor, constant: 16),
             manageButton.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -16),
             manageButton.heightAnchor.constraint(equalToConstant: 30),
+        ])
+        
+        let seperatorView = UIView()
+        seperatorView.backgroundColor = UIColor(red: 0.53, green: 0.53, blue: 0.53, alpha: 1)
+        self.seperatorView = seperatorView
+        containerView.addSubview(seperatorView)
+        seperatorView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            seperatorView.rightAnchor.constraint(equalTo: self.rightAnchor),
+            seperatorView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            seperatorView.leftAnchor.constraint(equalTo: self.leftAnchor),
+            seperatorView.heightAnchor.constraint(equalToConstant: 1),
         ])
     }
     
