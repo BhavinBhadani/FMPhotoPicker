@@ -135,7 +135,7 @@ public class FMPhotoPickerViewController: UIViewController {
         PHPhotoLibrary.shared().register(self)
         
         self.isAccessLimited = false
-        if Helper.libraryAccessStatus() == .limited {
+        if #available(iOS 14, *), Helper.libraryAccessStatus() == .limited {
             self.isAccessLimited = true
             self.fetchPhotos()
         } else if Helper.libraryAccessStatus() == .authorized {
@@ -343,7 +343,7 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension FMPhotoPickerViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if isAccessLimited && indexPath.item == 0 {
+        if #available(iOS 14, *), isAccessLimited && indexPath.item == 0 {
             PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
             return
         }
