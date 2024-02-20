@@ -107,17 +107,27 @@ class Helper: NSObject {
         options.isSynchronous = false
         options.isNetworkAccessAllowed = true
         
-        let pId = manager.requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
-            guard let data = data,
-                let image = UIImage(data: data)
+        if #available(iOS 13, *) {
+            let pId = manager.requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
+                guard let data = data,
+                      let image = UIImage(data: data)
                 else {
-                return complete(nil)
+                    return complete(nil)
+                }
+                complete(image)
             }
-            complete(image)
+            return pId
+        } else {
+            let pId = manager.requestImageData(for: asset, options: options) { data, _, _, info in
+                guard let data = data,
+                      let image = UIImage(data: data)
+                else {
+                    return complete(nil)
+                }
+                complete(image)
+            }
+            return pId
         }
-        
-//        manager.cancelImageRequest(pId)
-        return pId
     }
     
     static func getPhoto(by photoAsset: PHAsset, in desireSize: CGSize, complete: @escaping (UIImage?) -> Void) -> PHImageRequestID {    
