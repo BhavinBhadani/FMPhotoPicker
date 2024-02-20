@@ -107,7 +107,7 @@ class Helper: NSObject {
         options.isSynchronous = false
         options.isNetworkAccessAllowed = true
         
-        let pId = manager.requestImageData(for: asset, options: options) { data, _, _, info in
+        let pId = manager.requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
             guard let data = data,
                 let image = UIImage(data: data)
                 else {
@@ -115,6 +115,7 @@ class Helper: NSObject {
             }
             complete(image)
         }
+        
 //        manager.cancelImageRequest(pId)
         return pId
     }
@@ -159,20 +160,49 @@ class Helper: NSObject {
     }
     
     static func canAccessPhotoLib() -> Bool {
-        return PHPhotoLibrary.authorizationStatus() == .authorized
+        if #available(iOS 14, *) {
+            let accessLevel: PHAccessLevel = .readWrite
+            return PHPhotoLibrary.authorizationStatus(for: accessLevel) == .authorized
+        } else {
+            return PHPhotoLibrary.authorizationStatus() == .authorized
+        }
+    }
+    
+    static func libraryAccessStatus() -> PHAuthorizationStatus {
+        if #available(iOS 14, *) {
+            let accessLevel: PHAccessLevel = .readWrite
+            return PHPhotoLibrary.authorizationStatus(for: accessLevel)
+        } else {
+            return PHPhotoLibrary.authorizationStatus()
+        }
     }
     
     static func openIphoneSetting() {
         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
     }
-    
+
     static func requestAuthorizationForPhotoAccess(authorized: @escaping () -> Void, rejected: @escaping () -> Void) {
-        PHPhotoLibrary.requestAuthorization { status in
-            DispatchQueue.main.async {
-                if status == .authorized {
-                    authorized()
-                } else {
-                    rejected()
+        if #available(iOS 14, *) {
+            let requiredAccessLevel: PHAccessLevel = .readWrite
+            PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { status in
+                DispatchQueue.main.async {
+                    if status == .authorized {
+                        authorized()
+                    } else if status == .limited {
+                        authorized()
+                    } else {
+                        rejected()
+                    }
+                }
+            }
+        } else {
+            PHPhotoLibrary.requestAuthorization { status in
+                DispatchQueue.main.async {
+                    if status == .authorized {
+                        authorized()
+                    } else {
+                        rejected()
+                    }
                 }
             }
         }

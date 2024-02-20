@@ -62,6 +62,11 @@ public struct FMPhotoPickerConfig {
     public var titleFontSize: CGFloat = 17
     public var titleFont: UIFont = .systemFont(ofSize: 17)
     public var doneButtonFont: UIFont = .systemFont(ofSize: 14)
+    public var manageButtonFont: UIFont = .systemFont(ofSize: 10)
+    public var manageButtonBorderColor: UIColor = kRedColor
+    public var manageButtonTextColor: UIColor = .white
+    public var manageTitleLabelFont: UIFont = .systemFont(ofSize: 12)
+    public var manageTitleLabelTextColor: UIColor = .white
     public var navigationBarHeight: CGFloat = 44
     public var viewBackgroundColor: UIColor = .white
     public var selectedBorderColor: UIColor = kRedColor
@@ -97,7 +102,10 @@ public struct FMPhotoPickerConfig {
         "permission_dialog_title":                  "FMPhotoPicker",
         "permission_dialog_message":                "FMPhotoPicker wants to access Photo Library",
         "permission_button_ok":                     "OK",
-        "permission_button_cancel":                 "Cancel"
+        "permission_button_cancel":                 "Cancel",
+        
+        "picker_permission_button_manage":          "Manage",
+        "picker_permission_manage_label":           "FMPhotoPicker can only access selected photos and videos"
     ]
     
     public init() {

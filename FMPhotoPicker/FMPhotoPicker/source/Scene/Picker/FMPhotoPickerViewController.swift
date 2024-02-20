@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Photos
+import PhotosUI
 
 // MARK: - Delegate protocol
 public protocol FMPhotoPickerViewControllerDelegate: AnyObject {
@@ -33,6 +33,13 @@ public class FMPhotoPickerViewController: UIViewController {
         label.textColor = .white
         return label
     }()
+    
+    private var manageLibContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     private weak var doneButton: UIButton!
     private weak var cancelButton: UIButton!
     
@@ -62,6 +69,8 @@ public class FMPhotoPickerViewController: UIViewController {
         }
     }
     
+    private var isAccessLimited: Bool = false
+
     // MARK: - Init
     public init(config: FMPhotoPickerConfig) {
         self.config = config
@@ -92,6 +101,8 @@ public class FMPhotoPickerViewController: UIViewController {
     // MARK: - Setup View
     private func setupView() {
         self.imageCollectionView.register(FMPhotoPickerImageCollectionViewCell.self, forCellWithReuseIdentifier: FMPhotoPickerImageCollectionViewCell.reuseId)
+        self.imageCollectionView.register(FMPhotoPickerHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FMPhotoPickerHeaderView.reuseId)
+
         self.imageCollectionView.dataSource = self
         self.imageCollectionView.delegate = self
         self.view.backgroundColor = config.viewBackgroundColor
@@ -120,7 +131,13 @@ public class FMPhotoPickerViewController: UIViewController {
     
     // MARK: - Logic
     private func requestAndFetchAssets() {
-        if Helper.canAccessPhotoLib() {
+        PHPhotoLibrary.shared().register(self)
+        
+        self.isAccessLimited = false
+        if Helper.libraryAccessStatus() == .limited {
+            self.isAccessLimited = true
+            self.fetchPhotos()
+        } else if Helper.libraryAccessStatus() == .authorized {
             self.fetchPhotos()
         } else {
             let okAction = UIAlertAction(
@@ -202,6 +219,16 @@ public class FMPhotoPickerViewController: UIViewController {
                 FMLoadingView.shared.hide()
                 self.delegate?.fmPhotoPickerController(self, didFinishPickingPhotoWith: result)
             }
+        }
+    }
+}
+
+// MARK: - PHPhotoLibraryChangeObserver
+extension FMPhotoPickerViewController: PHPhotoLibraryChangeObserver {
+    
+    public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.main.async { [unowned self] in
+            self.fetchPhotos()
         }
     }
 }
@@ -302,7 +329,7 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
 }
 
 // MARK: - UICollectionViewDelegate
-extension FMPhotoPickerViewController: UICollectionViewDelegate {
+extension FMPhotoPickerViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if config.selectOnFullScreenEnable {
             let vc = FMPhotoPresenterViewController(config: self.config, dataSource: self.dataSource, initialPhotoIndex: indexPath.item)
@@ -344,6 +371,28 @@ extension FMPhotoPickerViewController: UICollectionViewDelegate {
             }
             self.updateControlBar()
         }
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FMPhotoPickerHeaderView.reuseId, for: indexPath) as? FMPhotoPickerHeaderView else {
+                return UICollectionReusableView()
+            }
+            view.configure(with: config)
+            view.onTapManage = {
+                PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
+            }
+            return view
+        }
+        
+        return UICollectionReusableView()
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        if isAccessLimited {
+            return CGSize(width: collectionView.frame.width, height: 60)
+        }
+        return .zero
     }
 }
 

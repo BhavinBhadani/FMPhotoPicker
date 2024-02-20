@@ -62,7 +62,6 @@ class FMPhotoPickerBatchSelector: NSObject {
         self.viewController.view.addGestureRecognizer(self.panGesture)
     }
     
-    
     @objc private func panGestureHandler(sender: UIPanGestureRecognizer) {
         if sender.state == .began {
             self.indexPathOfBeganTap = self.cellIndexPathForPan(pan: sender)
@@ -144,7 +143,6 @@ class FMPhotoPickerBatchSelector: NSObject {
         self.prevIndexPath = currentIndexPath
     }
     
-    
     /**
      Change selection status of all Photo in dataSource that are listed in panSelections by SelectionTrending
      */
@@ -203,7 +201,6 @@ class FMPhotoPickerBatchSelector: NSObject {
             }
         }
     }
-    
     
     /**
      Create a new affected index path range
