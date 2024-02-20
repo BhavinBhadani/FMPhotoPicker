@@ -135,7 +135,7 @@ public class FMPhotoPickerViewController: UIViewController {
         PHPhotoLibrary.shared().register(self)
         
         self.isAccessLimited = false
-        if #available(iOS 14, *), Helper.libraryAccessStatus() == .limited {
+        if Helper.libraryAccessStatus() == .limited {
             self.isAccessLimited = true
             self.fetchPhotos()
         } else if Helper.libraryAccessStatus() == .authorized {
