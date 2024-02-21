@@ -141,24 +141,28 @@ public class FMPhotoPickerViewController: UIViewController {
         } else if Helper.libraryAccessStatus() == .authorized {
             self.fetchPhotos()
         } else {
-            let okAction = UIAlertAction(
-                title: config.strings["permission_button_ok"],
-                style: .default) { (_) in
-                    Helper.requestAuthorizationForPhotoAccess(authorized: self.fetchPhotos, limited: self.fetchPhotosOnLimitedAccess, rejected: Helper.openIphoneSetting)
+            if UserDefaults.standard.value(forKey: "isFirstTimeConsumed") != nil {
+                let okAction = UIAlertAction(
+                    title: config.strings["permission_button_ok"],
+                    style: .default) { (_) in
+                        Helper.requestAuthorizationForPhotoAccess(authorized: self.fetchPhotos, limited: self.fetchPhotosOnLimitedAccess, rejected: Helper.openIphoneSetting)
+                }
+
+                let cancelAction = UIAlertAction(
+                    title: config.strings["permission_button_cancel"],
+                    style: .cancel,
+                    handler: nil)
+
+                Helper.showDialog(
+                    in: self,
+                    okAction: okAction,
+                    cancelAction: cancelAction,
+                    title: config.strings["permission_dialog_title"],
+                    message: config.strings["permission_dialog_message"]
+                    )
             }
-
-            let cancelAction = UIAlertAction(
-                title: config.strings["permission_button_cancel"],
-                style: .cancel,
-                handler: nil)
-
-            Helper.showDialog(
-                in: self,
-                okAction: okAction,
-                cancelAction: cancelAction,
-                title: config.strings["permission_dialog_title"],
-                message: config.strings["permission_dialog_message"]
-                )
+            
+            UserDefaults.standard.setValue(true, forKey: "isFirstTimeConsumed")
         }
     }
     
@@ -176,6 +180,8 @@ public class FMPhotoPickerViewController: UIViewController {
             self.imageCollectionView.selectItem(at: IndexPath(row: self.dataSource.numberOfPhotos - 1, section: 0),
                                                 animated: false,
                                                 scrollPosition: .bottom)
+        } else if isAccessLimited {
+            self.imageCollectionView.reloadData()
         }
     }
     
