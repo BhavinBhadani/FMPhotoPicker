@@ -12,10 +12,12 @@ import Photos
 class FMPhotosDataSource {
     public private(set) var photoAssets: [FMPhotoAsset]
     private var selectedPhotoIndexes: [Int]
-    
-    init(photoAssets: [FMPhotoAsset]) {
+    private var isAccessLimited: Bool
+
+    init(photoAssets: [FMPhotoAsset], isAccessLimited: Bool) {
         self.photoAssets = photoAssets
         self.selectedPhotoIndexes = []
+        self.isAccessLimited = isAccessLimited
     }
     
     public func setSeletedForPhoto(atIndex index: Int) {
@@ -39,7 +41,8 @@ class FMPhotosDataSource {
     }
     
     public func mediaTypeForPhoto(atIndex index: Int) -> FMMediaType? {
-        return self.photo(atIndex: index)?.mediaType
+        let indexPathItem = isAccessLimited ? (index - 1) : index
+        return self.photo(atIndex: indexPathItem)?.mediaType
     }
     
     public func countSelectedPhoto(byType: FMMediaType) -> Int {
@@ -50,7 +53,7 @@ class FMPhotosDataSource {
         return Array(self.selectedPhotoIndexes[changedIndex...])
     }
 
-    public func getSelectedPhotos(for isAccessLimited: Bool = false) -> [FMPhotoAsset] {
+    public func getSelectedPhotos() -> [FMPhotoAsset] {
         var result = [FMPhotoAsset]()
         self.selectedPhotoIndexes.forEach { index in
             let selectedIndex = isAccessLimited ? (index - 1) : index

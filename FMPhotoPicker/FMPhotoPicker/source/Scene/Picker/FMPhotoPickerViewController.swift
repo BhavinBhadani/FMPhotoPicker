@@ -173,7 +173,7 @@ public class FMPhotoPickerViewController: UIViewController {
             forceCropType = firstCrop
         }
         let fmPhotoAssets = photoAssets.map { FMPhotoAsset(asset: $0, forceCropType: forceCropType) }
-        self.dataSource = FMPhotosDataSource(photoAssets: fmPhotoAssets)
+        self.dataSource = FMPhotosDataSource(photoAssets: fmPhotoAssets, isAccessLimited: isAccessLimited)
         
         if self.dataSource.numberOfPhotos > 0 {
             self.imageCollectionView.reloadData()
@@ -200,7 +200,7 @@ public class FMPhotoPickerViewController: UIViewController {
     
     private func processDetermination() {
         if config.shouldReturnAsset {
-            let assets = dataSource.getSelectedPhotos(for: isAccessLimited).compactMap { $0.asset }
+            let assets = dataSource.getSelectedPhotos().compactMap { $0.asset }
             delegate?.fmPhotoPickerController(self, didFinishPickingPhotoWith: assets)
             return
         }
@@ -211,7 +211,7 @@ public class FMPhotoPickerViewController: UIViewController {
         
         DispatchQueue.global(qos: .userInitiated).async {
             let multiTask = DispatchGroup()
-            for (index, element) in self.dataSource.getSelectedPhotos(for: self.isAccessLimited).enumerated() {
+            for (index, element) in self.dataSource.getSelectedPhotos().enumerated() {
                 multiTask.enter()
                 element.requestFullSizePhoto(cropState: .edited, filterState: .edited) {
                     guard let image = $0 else { return }
@@ -304,12 +304,9 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
      the photo will be added to selected list. Otherwise, a warning dialog will be displayed and NOTHING will be added.
      */
     public func tryToAddPhotoToSelectedList(photoIndex index: Int) {
-        let indexPathItem = isAccessLimited ? (index - 1) : index
         if self.config.selectMode == .multiple {
-            guard let fmMediaType = self.dataSource.mediaTypeForPhoto(atIndex: indexPathItem) else { return }
-
+            guard let fmMediaType = self.dataSource.mediaTypeForPhoto(atIndex: index) else { return }
             var canBeAdded = true
-            
             switch fmMediaType {
             case .image:
                 if self.dataSource.countSelectedPhoto(byType: .image) >= self.config.maxImage {
@@ -336,11 +333,10 @@ extension FMPhotoPickerViewController: UICollectionViewDataSource {
             }
         } else {  // single selection mode
             var indexPaths = [IndexPath]()
-            self.dataSource.getSelectedPhotos(for: isAccessLimited).forEach { photo in
+            self.dataSource.getSelectedPhotos().forEach { photo in
                 guard let photoIndex = self.dataSource.index(ofPhoto: photo) else { return }
-                let photoIndexItem = isAccessLimited ? (photoIndex + 1) : photoIndex
-                indexPaths.append(IndexPath(row: photoIndexItem, section: 0))
-                self.dataSource.unsetSeclectedForPhoto(atIndex: photoIndexItem)
+                indexPaths.append(IndexPath(row: photoIndex, section: 0))
+                self.dataSource.unsetSeclectedForPhoto(atIndex: photoIndex)
             }
             
             self.dataSource.setSeletedForPhoto(atIndex: index)
